@@ -5,6 +5,7 @@ import { allYelpCategories } from './YelpCuisineList';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Close, MyLocation } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import FoodGuessVideo from '../Assets/FooDCuisineAsset.mp4';
 
 const CuisineSection = () => {
 
@@ -16,6 +17,7 @@ const CuisineSection = () => {
     const [cusinesSelected, setCusinesSelected] = useState([]);
     const [openErrorModal, setOpenErrorModal] = useState(false);
     const [error, setError] = useState('');
+    const [radius, setRadius] = useState(); // in Kilometers [0, 25, 50, 100
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -97,9 +99,17 @@ const CuisineSection = () => {
 
     const handleSubmit = () => {
 
+        console.log(cusinesSelected);
+
         if (cusinesSelected.length === 0) {
             setOpenErrorModal(true);
             setError("Please select at least one cuisine.");
+            return;
+        }
+
+        if (radius === "" || radius === undefined) {
+            setOpenErrorModal(true);
+            setError("Please enter a radius.");
             return;
         }
 
@@ -110,7 +120,7 @@ const CuisineSection = () => {
         }
 
         // This will be used to send the data to the result page and navigate to it.
-        // navigate("/result", { state: { location, cusinesSelected } });
+        // navigate("/result", { state: { location, radius, cusinesSelected } });
     }
 
 
@@ -121,29 +131,12 @@ const CuisineSection = () => {
     return (
         <Box>
             <AppBar position="static">
-                <Toolbar sx={{ display: 'flex', alignItems: 'center' }}>
+                <Toolbar sx={{ display: 'flex', alignItems: 'center', background: "#d31d30" }}>
                     <Typography variant="h4" component="div">
                         Couple<b>Eats</b>
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
-                    <TextField
-                        placeholder='Your Location'
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        sx={{
-                            background: "rgba(255, 255, 255, 0.5)",
-                            marginRight: 2,
-                            width: 400,
-                        }}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start" onClick={handleLocationClick} >
-                                    <MyLocation />
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
-                    <Avatar alt={user} onClick={handleMenuClick} sx={{ ":hover": { backgroundColor: "red", transition: "0.5s" } }} />
+                    <Avatar alt={user} onClick={handleMenuClick} sx={{ ":hover": { background: "#86121e", transition: "0.5s" } }} />
                     <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
                         <MenuItem onClick={handleSignout}>Sign out</MenuItem>
                     </Menu>
@@ -154,53 +147,153 @@ const CuisineSection = () => {
                 spacing={0}
                 direction="column"
                 alignItems="center"
-                justify="center"
+                justifyContent="center"
                 style={{ minHeight: '90vh' }}
             >
                 <Grid item xl={64}>
-                    <Card sx={{ width: "30vw", margin: 5, boxShadow: 10 }}>
-                        <CardHeader title="Person 1 - Preferences" />
-                        <CardContent>
-                            <Autocomplete
-                                multiple
-                                id="person1-cusines"
-                                onChange={handlePerson1CusineChange}
-                                options={allYelpCategories}
-                                getOptionLabel={(option) => option.title}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        variant="outlined"
-                                        label="You cusine preferences"
-                                        placeholder="Cusines"
+                    <Card sx={{ margin: 5, boxShadow: 10, minWidth: "30vw", top: "50%" }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                            <Box sx={{ flex: '1' }}>
+                                <CardHeader title="Pick your Cuisines" />
+                                <CardContent>
+                                    <Autocomplete
+                                        multiple
+                                        id="person1-cusines"
+                                        onChange={handlePerson1CusineChange}
+                                        options={allYelpCategories}
+                                        getOptionLabel={(option) => option.title}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                variant="outlined"
+                                                label="User 1 cusine preferences"
+                                                placeholder="Cusines"
+                                            />
+                                        )}
+                                        sx={{
+                                            marginLeft: 4,
+                                            marginBottom: 2,
+                                        }}
                                     />
-                                )}
-                                sx={{ margin: 2 }}
-                            />
-                        </CardContent>
-                    </Card>
-                    <Card sx={{ margin: 5, boxShadow: 10 }}>
-                        <CardHeader title="Person 2 - Preferences" />
-                        <CardContent>
-                            <Autocomplete
-                                multiple
-                                id="person2-cusines"
-                                onChange={handlePerson2CusineChange}
-                                options={allYelpCategories}
-                                getOptionLabel={(option) => option.title}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        variant="outlined"
-                                        label="You cusine preferences"
-                                        placeholder="Cusines"
+                                    <Autocomplete
+                                        multiple
+                                        id="person2-cusines"
+                                        onChange={handlePerson2CusineChange}
+                                        options={allYelpCategories}
+                                        getOptionLabel={(option) => option.title}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                variant="outlined"
+                                                label="User 2 cusine preferences"
+                                                placeholder="Cusines"
+                                            />
+                                        )}
+                                        sx={{
+                                            marginLeft: 4,
+                                            marginBottom: 2,
+                                        }}
                                     />
-                                )}
-                                sx={{ margin: 2 }}
-                            />
-                        </CardContent>
+                                    <TextField
+                                        placeholder='Enter Search Radius'
+                                        value={radius}
+                                        onChange={(e) => setRadius(e.target.value)}
+                                        variant="outlined"
+                                        sx={{
+                                            border: '0px solid black',
+                                            padding: "0 0 5px 14px",
+                                            width: "95%",
+                                            ml: 2,
+                                            mr: 2,
+                                            '& .MuiOutlinedInput-root': {
+                                                '& fieldset': {
+                                                    borderColor: 'black',
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: 'black',
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: 'black',
+                                                },
+                                            },
+                                            '& .MuiInputBase-input': {
+                                                padding: '10px 14px',
+                                                width: '100%',
+                                            },
+                                        }}
+                                    />
+
+                                    <TextField
+                                        placeholder='Your Location'
+                                        value={location}
+                                        onChange={(e) => setLocation(e.target.value)}
+                                        sx={{
+                                            border: '0px solid black',
+                                            padding: "5px 0 0 14px",
+                                            width: "95%",
+                                            ml: 2,
+                                            mr: 2,
+                                            '& .MuiOutlinedInput-root': {
+                                                '& fieldset': {
+                                                    borderColor: 'black',
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: 'black',
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: 'black',
+                                                },
+                                            },
+                                            '& .MuiInputBase-input': {
+                                                padding: '10px 14px',
+                                                width: '100%',
+                                            },
+                                        }}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start" onClick={handleLocationClick} >
+                                                    <MyLocation />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleSubmit}
+                                        sx={{
+                                            margin: 2,
+                                            background: "#d31d30",
+                                            marginLeft: 4,
+                                            marginBottom: 3,
+                                            color: "white",
+                                            ":hover": {
+                                                background: "#86121e",
+                                                transition: "0.2s"
+                                            }
+                                        }}>
+                                        Submit
+                                    </Button>
+                                </CardContent>
+                            </Box>
+                            <Box sx={{ width: '30%', position: 'relative' }}>
+                                <video
+                                    autoPlay
+                                    loop
+                                    muted
+                                    src={FoodGuessVideo}
+                                    style={{
+                                        position: 'relative',
+                                        top: 0,
+                                        left: 0,
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'contain',
+                                        aspectRatio: '16/9',
+                                    }}
+                                />
+                            </Box>
+                        </Box>
                     </Card>
-                    <Button variant="contained" onClick={handleSubmit} sx={{ margin: 2, background: "rgb(25, 118, 210)", color: "white" }}>Submit</Button>
                 </Grid>
             </Grid>
 
