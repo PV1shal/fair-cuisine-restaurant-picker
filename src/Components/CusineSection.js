@@ -1,9 +1,9 @@
-import { Button, CardContent } from '@mui/joy';
+import { Button, CardContent, Modal } from '@mui/joy';
 import { Typography, AppBar, Box, Menu, MenuItem, Card, CardHeader, Toolbar, Avatar, Grid, Autocomplete, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { allYelpCategories } from './YelpCuisineList';
 import InputAdornment from '@mui/material/InputAdornment';
-import { MyLocation } from '@mui/icons-material';
+import { Close, MyLocation } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 const CuisineSection = () => {
@@ -14,6 +14,8 @@ const CuisineSection = () => {
     const [person1Cusines, setPerson1Cusines] = useState([]);
     const [person2Cusines, setPerson2Cusines] = useState([]);
     const [cusinesSelected, setCusinesSelected] = useState([]);
+    const [openErrorModal, setOpenErrorModal] = useState(false);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -94,6 +96,19 @@ const CuisineSection = () => {
     }
 
     const handleSubmit = () => {
+
+        if (cusinesSelected.length === 0) {
+            setOpenErrorModal(true);
+            setError("Please select at least one cuisine.");
+            return;
+        }
+
+        if (location === "" || location === "Loading...") {
+            setOpenErrorModal(true);
+            setError("Please enter your location.");
+            return;
+        }
+
         // This will be used to send the data to the result page and navigate to it.
         // navigate("/result", { state: { location, cusinesSelected } });
     }
@@ -114,6 +129,7 @@ const CuisineSection = () => {
                     <TextField
                         placeholder='Your Location'
                         value={location}
+                        onChange={(e) => setLocation(e.target.value)}
                         sx={{
                             background: "rgba(255, 255, 255, 0.5)",
                             marginRight: 2,
@@ -187,6 +203,39 @@ const CuisineSection = () => {
                     <Button variant="contained" onClick={handleSubmit} sx={{ margin: 2, background: "rgb(25, 118, 210)", color: "white" }}>Submit</Button>
                 </Grid>
             </Grid>
+
+            <Modal
+                open={openErrorModal}
+                onClose={() => setOpenErrorModal(false)}
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                <Box>
+                    <Box sx={{
+                        position: 'relative',
+                        width: '60vw',
+                        maxWidth: '400px',
+                        bgcolor: 'background.paper',
+                        border: '1px solid #000',
+                        boxShadow: 24,
+                        p: '1.5vw'
+                    }}>
+                        <Close onClick={() => setOpenErrorModal(false)} sx={{ position: 'absolute', top: 0, right: 0, cursor: 'pointer' }} />
+                        <Typography id="modal-modal-title" variant="h5" component="h2">
+                            Error
+                        </Typography>
+                        <Typography id="modal-modal-description" sx={{ mt: '2vw' }}>
+                            {error}
+                        </Typography>
+                    </Box>
+                </Box>
+            </Modal>
+
+
+
         </Box>
     )
 }
