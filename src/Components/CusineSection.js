@@ -103,7 +103,7 @@ const CuisineSection = () => {
             return;
         }
 
-        if (location === "") {
+        if (location === "" || location === "Loading...") {
             setOpenErrorModal(true);
             setError("Please enter your location.");
             return;
