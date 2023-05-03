@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { allYelpCategories } from './YelpCuisineList';
 import InputAdornment from '@mui/material/InputAdornment';
 import { MyLocation } from '@mui/icons-material';
-import reverseGeocode from 'reverse-geocode';
+import { useNavigate } from 'react-router-dom';
 
 const CuisineSection = () => {
 
@@ -14,6 +14,7 @@ const CuisineSection = () => {
     const [person1Cusines, setPerson1Cusines] = useState([]);
     const [person2Cusines, setPerson2Cusines] = useState([]);
     const [cusinesSelected, setCusinesSelected] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!window.localStorage.getItem("user")) {
@@ -93,8 +94,8 @@ const CuisineSection = () => {
     }
 
     const handleSubmit = () => {
-        console.log(cusinesSelected);
-        console.log("Submit");
+        // This will be used to send the data to the result page and navigate to it.
+        // navigate("/result", { state: { location, cusinesSelected } });
     }
 
 
