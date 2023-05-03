@@ -51,7 +51,7 @@ const LoginPage = () => {
                         <TableRow>
                             <TableCell>
                                 <form onSubmit={(e) => handleSubmit(e)}>
-                                    <label style={{ fontSize: 34, color: "#1A4AF2", fontWeight: "bold", marginLeft: "2%" }}>
+                                    <label style={{ fontSize: 34, color: "#d31d30", fontWeight: "bold", marginLeft: "2%" }}>
                                         Login
                                     </label>
                                     <TextField
@@ -89,7 +89,7 @@ const LoginPage = () => {
                                                     margin: 1,
                                                     width: "25%",
                                                     height: "50px",
-                                                    background: "#1A4AF2",
+                                                    background: "#d31d30",
                                                     fontSize: "18px",
                                                     fontWeight: "bold",
                                                     color: "white",
@@ -109,8 +109,8 @@ const LoginPage = () => {
                                     )}
                                 </form>
                             </TableCell>
-                            <TableCell sx={{ width: "40%", background: "#1A4AF2", overflow: "hidden" }}>
-                                <LoginSVG style={{ background: "#1A4AF2", transform: "scale(1.75)" }} />
+                            <TableCell sx={{ width: "40%", background: "#d31d30", overflow: "hidden" }}>
+                                <LoginSVG style={{ background: "#d31d30", transform: "scale(1.75)" }} />
                             </TableCell>
                         </TableRow>
                     </Table>
