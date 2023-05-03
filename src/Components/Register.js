@@ -59,7 +59,7 @@ const RegisterPage = () => {
                         <TableRow>
                             <TableCell>
                                 <form onSubmit={(e) => handleSubmit(e)}>
-                                    <label style={{ fontSize: 34, color: "#1A4AF2", fontWeight: "bold", marginLeft: "2%" }}>
+                                    <label style={{ fontSize: 34, color: "#d31d30", fontWeight: "bold", marginLeft: "2%" }}>
                                         Register
                                     </label>
                                     <TextField
@@ -108,7 +108,7 @@ const RegisterPage = () => {
                                                     margin: 1,
                                                     width: "40%",
                                                     height: "50px",
-                                                    background: "#1A4AF2",
+                                                    background: "#d31d30",
                                                     fontSize: "14px",
                                                     fontWeight: "bold",
                                                     color: "white",
@@ -128,8 +128,8 @@ const RegisterPage = () => {
                                     )}
                                 </form>
                             </TableCell>
-                            <TableCell sx={{ width: "40%", background: "#1A4AF2", overflow: "hidden" }}>
-                                <LoginSVG style={{ background: "#1A4AF2", transform: "scale(1.25)" }} />
+                            <TableCell sx={{ width: "40%", background: "#d31d30", overflow: "hidden" }}>
+                                <LoginSVG style={{ background: "#d31d30", transform: "scale(1.25)" }} />
                             </TableCell>
                         </TableRow>
                     </Table>
