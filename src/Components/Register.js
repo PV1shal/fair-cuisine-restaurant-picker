@@ -1,8 +1,9 @@
 import { Box, Card, Typography, Link, Chip, Table, TableRow, TableCell, TextField, Button, CardContent } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import "./Login.css";
-import { ReactComponent as LoginSVG } from "../Assets/loginImage.svg";
+import { ReactComponent as LoginSVG } from "../Assets/registerImage.svg";
 import AspectRatio from '@mui/joy/AspectRatio';
+import UserServices from "../Services/UserServices";
 
 const RegisterPage = () => {
 
@@ -11,6 +12,12 @@ const RegisterPage = () => {
     const [ConfirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(() => {
+        if (window.localStorage.getItem("user")) {
+            window.location.href = "/cuisineselection";
+        }
+    }, []);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -23,8 +30,25 @@ const RegisterPage = () => {
             return;
         }
         setLoading(true);
-
-        // Validation logic here
+        var data = {
+            "userDetails": {
+                "username": username,
+                "password": password
+            }
+        };
+        setLoading(true);
+        UserServices.createUser(data)
+            .then((response) => {
+                window.localStorage.setItem("user", username);
+                window.location.href = "/cuisineselection";
+            })
+            .catch((error) => {
+                console.log(error);
+                setErrorMessage("Username already exists");
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }
 
     return (
@@ -104,10 +128,8 @@ const RegisterPage = () => {
                                     )}
                                 </form>
                             </TableCell>
-                            <TableCell sx={{ width: "40%", background: "#1A4AF2" }}>
-                                <AspectRatio ratio={11 / 9}>
-                                    <LoginSVG style={{ background: "#1A4AF2" }} />
-                                </AspectRatio>
+                            <TableCell sx={{ width: "40%", background: "#1A4AF2", overflow: "hidden" }}>
+                                <LoginSVG style={{ background: "#1A4AF2", transform: "scale(1.25)" }} />
                             </TableCell>
                         </TableRow>
                     </Table>

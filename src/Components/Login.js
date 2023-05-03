@@ -1,15 +1,20 @@
-import { Box, Card, Typography, Link, Chip, Table, TableRow, TableCell, TextField, Button, CardContent } from "@mui/material";
+import { Box, Card, Typography, Link, Chip, Table, TableRow, TableCell, TextField, Button, CardContent, CircularProgress } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import "./Login.css";
 import { ReactComponent as LoginSVG } from "../Assets/loginImage.svg";
-
-import AspectRatio from '@mui/joy/AspectRatio';
+import UserServices from "../Services/UserServices";
 
 const LoginPage = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(() => {
+        if (window.localStorage.getItem("user")) {
+            window.location.href = "/cuisineselection";
+        }
+    }, []);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -18,9 +23,25 @@ const LoginPage = () => {
             return;
         }
         setLoading(true);
-
-        // Validation logic here
-    }
+        var data = {
+            "userDetails": {
+                "username": username,
+                "password": password
+            }
+        };
+        UserServices.getUserById(username, data)
+            .then((response) => {
+                window.localStorage.setItem("user", username);
+                window.location.href = "/cuisineselection";
+            })
+            .catch((error) => {
+                console.log(error);
+                setErrorMessage("Invalid username or password");
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
 
     return (
         <div className="mainDiv">
@@ -61,7 +82,7 @@ const LoginPage = () => {
                                     </div>
                                     <br />
                                     <div style={{ display: "flex", justifyContent: "center" }}>
-                                        {isLoading ? <p>Loading...</p> :
+                                        {isLoading ? <CircularProgress /> :
                                             <Button variant="contained"
                                                 type="submit"
                                                 sx={{
@@ -88,10 +109,8 @@ const LoginPage = () => {
                                     )}
                                 </form>
                             </TableCell>
-                            <TableCell sx={{ width: "40%", background: "#1A4AF2" }}>
-                                <AspectRatio ratio={11 / 9}>
-                                    <LoginSVG style={{ background: "#1A4AF2" }} />
-                                </AspectRatio>
+                            <TableCell sx={{ width: "40%", background: "#1A4AF2", overflow: "hidden" }}>
+                                <LoginSVG style={{ background: "#1A4AF2", transform: "scale(1.75)" }} />
                             </TableCell>
                         </TableRow>
                     </Table>
