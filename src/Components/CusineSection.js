@@ -9,8 +9,6 @@ import FoodGuessVideo from '../Assets/FooDCuisineAsset.mp4';
 
 const CuisineSection = () => {
 
-    const [user, setUser] = useState();
-    const [anchorEl, setAnchorEl] = useState(null);
     const [location, setLocation] = useState("");
     const [person1Cusines, setPerson1Cusines] = useState([]);
     const [person2Cusines, setPerson2Cusines] = useState([]);
@@ -56,20 +54,6 @@ const CuisineSection = () => {
                     };
                 });
         }
-    };
-
-    const handleMenuClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleSignout = () => {
-        window.localStorage.removeItem("user");
-        setAnchorEl(null);
-        window.location.href = "/";
     };
 
     const handleLocationClick = () => {
@@ -123,25 +107,8 @@ const CuisineSection = () => {
         // navigate("/result", { state: { location, radius, cusinesSelected } });
     }
 
-
-    useEffect(() => {
-        setUser(window.localStorage.getItem("user"));
-    }, []);
-
     return (
         <Box>
-            <AppBar position="static">
-                <Toolbar sx={{ display: 'flex', alignItems: 'center', background: "#d31d30" }}>
-                    <Typography variant="h4" component="div">
-                        Couple<b>Eats</b>
-                    </Typography>
-                    <Box sx={{ flexGrow: 1 }} />
-                    <Avatar alt={user} onClick={handleMenuClick} sx={{ ":hover": { background: "#86121e", transition: "0.5s" } }} />
-                    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                        <MenuItem onClick={handleSignout}>Sign out</MenuItem>
-                    </Menu>
-                </Toolbar>
-            </AppBar>
             <Grid
                 container
                 spacing={0}
