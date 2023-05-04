@@ -80,16 +80,19 @@ const ResultScreen = () => {
     }
 
     const checkIsOpen = (restaurant) => {
+        var result = "false";
         YelpServices.getBusinessesByIDs(restaurant.id)
             .then((res) => {
-                if (res.data.business.hours[0].is_open_now === true) {
-                    return true;
+                if (res.buisness.hourse.is_open_now) {
+                    result = "true";
+                } else {
+                    result = "false";
                 }
-                return false;
             })
             .catch((err) => {
                 console.log(err);
             });
+        return result;
     }
 
     const handleRatingFilterChange = (e) => {
@@ -113,8 +116,7 @@ const ResultScreen = () => {
         var len = 0;
         const filteredRestaurants = getFilteredRestaurants();
         const restaurantCards = filteredRestaurants.map((restaurant) => {
-            if (checkIsOpen(restaurant) === true) {
-                console.log("open rest");
+            if (checkIsOpen(restaurant)) {
                 len++;
                 return (
                     <Card
