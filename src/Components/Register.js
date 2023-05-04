@@ -55,7 +55,7 @@ const RegisterPage = () => {
 
     return (
         <div className="mainDiv">
-            <Box sx={{ width: "50vw", height: "40vh", boxShadow: 10, gap: 2, borderRadius: 3 }}>
+            <Box sx={{ width: "50vw", height: "80vh", boxShadow: 10, gap: 2, borderRadius: 3 }}>
                 <Card sx={{ height: "100%", borderRadius: 3 }} >
                     <Table sx={{ height: "100%" }} >
                         <TableRow>
