@@ -20,6 +20,8 @@ const ResultScreen = () => {
     const [ratingFilter, setRatingFilter] = useState('1');
     const [priceFilter, setPriceFilter] = useState('$$$');
     const [typeOfRestaurantsFound, setTypeOfRestaurantsFound] = useState('');
+    const [openRandomRestaurantModal, setOpenRandomRestaurantModal] = useState(false);
+    const [randomRestaurant, setRandomRestaurant] = useState({});
 
     useEffect(() => {
         setLoading(true);
@@ -184,6 +186,12 @@ const ResultScreen = () => {
         });
     }
 
+    const handleSuggestions = () => {
+        const filteredRestaurants = getFilteredRestaurants();
+        setRandomRestaurant(filteredRestaurants[Math.floor(Math.random() * filteredRestaurants.length)]);
+        setOpenRandomRestaurantModal(true);
+    }
+
     const filterRadioButtons = () => {
         return (
             <div style={{
@@ -283,6 +291,9 @@ const ResultScreen = () => {
                         </RadioGroup>
                     </FormControl>
                 </div>
+                <div>
+                    <Button onClick={handleSuggestions}>Suggest us one!</Button>
+                </div>
             </div>
         );
     }
@@ -316,7 +327,80 @@ const ResultScreen = () => {
                                 {filterRadioButtons()}
 
                             </Box>
-                            <Button>Suggest us one!</Button>
+
+
+                            <Modal
+                                open={openRandomRestaurantModal}
+                                onClose={() => setOpenRandomRestaurantModal(false)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <Box>
+                                    <Box sx={{
+                                        position: 'relative',
+                                        maxWidth: '40vw',
+                                        bgcolor: 'background.paper',
+                                        border: '1px solid #000',
+                                        boxShadow: 24,
+                                        p: '1.5vw'
+                                    }}>
+                                        <Close onClick={() => setOpenRandomRestaurantModal(false)} sx={{ position: 'absolute', top: 0, right: 0, cursor: 'pointer' }} />
+                                        <Card
+                                            key={randomRestaurant.id}
+                                            sx={{ borderRadius: 3, margin: 3, boxShadow: 10 }}
+                                        >
+                                            <Table>
+                                                <TableRow>
+                                                    <TableCell
+                                                        sx={{
+                                                            width: "37%",
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src={randomRestaurant.image_url}
+                                                            alt='restaurant'
+                                                            style={{
+                                                                width: "100%",
+                                                                height: "15vh",
+                                                                aspectRatio: "16/9",
+                                                                objectFit: "cover",
+                                                            }}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Typography variant="h5" component="div">
+                                                            {randomRestaurant.name}
+                                                        </Typography>
+                                                        <Rating disabled value={randomRestaurant.rating} precision={0.5} />
+                                                        <Typography variant="h5" color="text.secondary">
+                                                            {randomRestaurant.price}
+                                                        </Typography>
+                                                        <Typography variant="body2" color="text.secondary">
+                                                            {getCategories(randomRestaurant.categories)}
+                                                        </Typography>
+                                                        <Button
+                                                            onClick={() => { randomRestaurant.url && window.open(randomRestaurant.url, "_blank") }}
+                                                            sx={{
+                                                                margin: "0.5rem",
+                                                                background: "#d31d30",
+                                                                ":hover": {
+                                                                    background: "#86121e",
+                                                                },
+                                                            }}
+                                                        >
+                                                            Yelp Page
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            </Table>
+                                        </Card>
+                                    </Box>
+                                </Box>
+                            </Modal>
+
                         </>
                     )
             }
