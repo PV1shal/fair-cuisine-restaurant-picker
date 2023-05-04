@@ -110,63 +110,63 @@ const ResultScreen = () => {
     };
 
     const getValidRestaurants = () => {
-        var len = 1;
+        var len = 0;
         const filteredRestaurants = getFilteredRestaurants();
         const restaurantCards = filteredRestaurants.map((restaurant) => {
-            // if (checkIsOpen(restaurant)) {
-            len++;
-            return (
-                <Card
-                    key={restaurant.id}
-                    sx={{ borderRadius: 3, margin: 3, boxShadow: 10 }}
-                >
-                    <Table>
-                        <TableRow>
-                            <TableCell
-                                sx={{
-                                    width: "37%",
-                                }}
-                            >
-                                <img
-                                    src={restaurant.image_url}
-                                    alt='restaurant'
-                                    style={{
-                                        width: "100%",
-                                        height: "15vh",
-                                        aspectRatio: "16/9",
-                                        objectFit: "cover",
-                                    }}
-                                />
-                            </TableCell>
-                            <TableCell>
-                                <Typography variant="h5" component="div">
-                                    {restaurant.name}
-                                </Typography>
-                                <Rating disabled value={restaurant.rating} precision={0.5} />
-                                <Typography variant="h5" color="text.secondary">
-                                    {restaurant.price}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {getCategories(restaurant.categories)}
-                                </Typography>
-                                <Button
-                                    onClick={() => { restaurant.url && window.open(restaurant.url, "_blank") }}
+            if (checkIsOpen(restaurant)) {
+                len++;
+                return (
+                    <Card
+                        key={restaurant.id}
+                        sx={{ borderRadius: 3, margin: 3, boxShadow: 10 }}
+                    >
+                        <Table>
+                            <TableRow>
+                                <TableCell
                                     sx={{
-                                        margin: "0.5rem",
-                                        background: "#d31d30",
-                                        ":hover": {
-                                            background: "#86121e",
-                                        },
+                                        width: "37%",
                                     }}
                                 >
-                                    Yelp Page
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    </Table>
-                </Card>
-            );
-            // }
+                                    <img
+                                        src={restaurant.image_url}
+                                        alt='restaurant'
+                                        style={{
+                                            width: "100%",
+                                            height: "15vh",
+                                            aspectRatio: "16/9",
+                                            objectFit: "cover",
+                                        }}
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="h5" component="div">
+                                        {restaurant.name}
+                                    </Typography>
+                                    <Rating disabled value={restaurant.rating} precision={0.5} />
+                                    <Typography variant="h5" color="text.secondary">
+                                        {restaurant.price}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {getCategories(restaurant.categories)}
+                                    </Typography>
+                                    <Button
+                                        onClick={() => { restaurant.url && window.open(restaurant.url, "_blank") }}
+                                        sx={{
+                                            margin: "0.5rem",
+                                            background: "#d31d30",
+                                            ":hover": {
+                                                background: "#86121e",
+                                            },
+                                        }}
+                                    >
+                                        Yelp Page
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        </Table>
+                    </Card>
+                );
+            }
         });
 
         if (len === 0) {
