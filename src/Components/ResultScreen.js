@@ -79,14 +79,15 @@ const ResultScreen = () => {
         });
     }
 
-    const checkIsOpen = (restaurant) => {
-        var result = "false";
-        YelpServices.getBusinessesByIDs(restaurant.id)
+    const checkIsOpen = async (restaurant) => {
+        var result = false;
+        await YelpServices.getBusinessesByIDs(restaurant.id)
             .then((res) => {
-                if (res.buisness.hourse.is_open_now) {
-                    result = "true";
+                console.log(res.data.business.hours[0].is_open_now);
+                if (res.data.business.hours[0].is_open_now) {
+                    result = true;
                 } else {
-                    result = "false";
+                    result = false;
                 }
             })
             .catch((err) => {
