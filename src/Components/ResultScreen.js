@@ -82,7 +82,7 @@ const ResultScreen = () => {
     const checkIsOpen = (restaurant) => {
         YelpServices.getBusinessesByIDs(restaurant.id)
             .then((res) => {
-                if (res.buisness.hourse.is_open_now) {
+                if (res.data.business.hours[0].is_open_now === true) {
                     return true;
                 }
                 return false;
@@ -113,7 +113,8 @@ const ResultScreen = () => {
         var len = 0;
         const filteredRestaurants = getFilteredRestaurants();
         const restaurantCards = filteredRestaurants.map((restaurant) => {
-            if (checkIsOpen(restaurant)) {
+            if (checkIsOpen(restaurant) === true) {
+                console.log("open rest");
                 len++;
                 return (
                     <Card
