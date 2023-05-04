@@ -1,19 +1,12 @@
 import { Button, CardContent, FormControl, FormLabel, Modal, Radio, RadioGroup } from '@mui/joy';
-import { CircularProgress, Typography, Box, Card, Grid, Table, TableRow, TableCell, Rating, Chip, ToggleButtonGroup, ToggleButton, FormControlLabel } from '@mui/material';
+import { CircularProgress, Typography, Box, Card, Grid, Table, TableRow, TableCell, Rating, Chip, FormControlLabel } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { allYelpCategories } from './YelpCuisineList';
-import InputAdornment from '@mui/material/InputAdornment';
-import { AttachMoney, Close, MyLocation, Star } from '@mui/icons-material';
-import { useLocation, useNavigate } from 'react-router-dom';
-import FoodGuessVideo from '../Assets/FooDCuisineAsset.mp4';
-import CuisineSection from './CusineSection';
+import { AttachMoney, Close } from '@mui/icons-material';
+import { useLocation } from 'react-router-dom';
 import YelpServices from '../Services/YelpServices';
 
 const ResultScreen = () => {
     const location = useLocation();
-    const pos = location.state.location;
-    const [radius, setRadius] = useState(location.state.radius);
-    const cuisines = location.state.Cuisines;
 
     const [restaurants, setRestaurants] = useState([]);
     const [isLoading, setLoading] = useState(false);
@@ -21,7 +14,7 @@ const ResultScreen = () => {
     const [priceFilter, setPriceFilter] = useState('$$$');
     const [typeOfRestaurantsFound, setTypeOfRestaurantsFound] = useState('');
     const [openRandomRestaurantModal, setOpenRandomRestaurantModal] = useState(false);
-    const [randomRestaurant, setRandomRestaurant] = useState({});
+    const [randomRestaurant, setRandomRestaurant] = useState();
 
     useEffect(() => {
         setLoading(true);
@@ -36,7 +29,6 @@ const ResultScreen = () => {
         YelpServices.getBusinesses(data)
             .then((res) => {
                 setRestaurants(res.data.yelpAPI);
-
                 var openRestaurants = [];
 
                 res.data.yelpAPI.map((restaurant) => {
@@ -78,7 +70,6 @@ const ResultScreen = () => {
         var result = false;
         await YelpServices.getBusinessesByIDs(restaurant.id)
             .then((res) => {
-                console.log(res.data.business.hours[0].is_open_now);
                 if (res.data.business.hours[0].is_open_now) {
                     result = true;
                 } else {
@@ -159,7 +150,7 @@ const ResultScreen = () => {
                                 <Typography variant="h5" component="div">
                                     {restaurant.name}
                                 </Typography>
-                                <Rating disabled value={restaurant.rating} precision={0.5} />
+                                <Rating readOnly value={restaurant.rating} precision={0.5} />
                                 <Typography variant="h5" color="text.secondary">
                                     {restaurant.price}
                                 </Typography>
@@ -328,78 +319,81 @@ const ResultScreen = () => {
 
                             </Box>
 
+                            {
+                                randomRestaurant &&
 
-                            <Modal
-                                open={openRandomRestaurantModal}
-                                onClose={() => setOpenRandomRestaurantModal(false)}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <Box>
-                                    <Box sx={{
-                                        position: 'relative',
-                                        maxWidth: '40vw',
-                                        bgcolor: 'background.paper',
-                                        border: '1px solid #000',
-                                        boxShadow: 24,
-                                        p: '1.5vw'
-                                    }}>
-                                        <Close onClick={() => setOpenRandomRestaurantModal(false)} sx={{ position: 'absolute', top: 0, right: 0, cursor: 'pointer' }} />
-                                        <Card
-                                            key={randomRestaurant.id}
-                                            sx={{ borderRadius: 3, margin: 3, boxShadow: 10 }}
-                                        >
-                                            <Table>
-                                                <TableRow>
-                                                    <TableCell
-                                                        sx={{
-                                                            width: "37%",
-                                                        }}
-                                                    >
-                                                        <img
-                                                            src={randomRestaurant.image_url}
-                                                            alt='restaurant'
-                                                            style={{
-                                                                width: "100%",
-                                                                height: "15vh",
-                                                                aspectRatio: "16/9",
-                                                                objectFit: "cover",
-                                                            }}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Typography variant="h5" component="div">
-                                                            {randomRestaurant.name}
-                                                        </Typography>
-                                                        <Rating disabled value={randomRestaurant.rating} precision={0.5} />
-                                                        <Typography variant="h5" color="text.secondary">
-                                                            {randomRestaurant.price}
-                                                        </Typography>
-                                                        <Typography variant="body2" color="text.secondary">
-                                                            {getCategories(randomRestaurant.categories)}
-                                                        </Typography>
-                                                        <Button
-                                                            onClick={() => { randomRestaurant.url && window.open(randomRestaurant.url, "_blank") }}
+                                <Modal
+                                    open={openRandomRestaurantModal}
+                                    onClose={() => setOpenRandomRestaurantModal(false)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <Box>
+                                        <Box sx={{
+                                            position: 'relative',
+                                            maxWidth: '40vw',
+                                            bgcolor: 'background.paper',
+                                            border: '1px solid #000',
+                                            boxShadow: 24,
+                                            p: '1.5vw'
+                                        }}>
+                                            <Close onClick={() => setOpenRandomRestaurantModal(false)} sx={{ position: 'absolute', top: 0, right: 0, cursor: 'pointer' }} />
+                                            <Card
+                                                key={randomRestaurant.id}
+                                                sx={{ borderRadius: 3, margin: 3, boxShadow: 10 }}
+                                            >
+                                                <Table>
+                                                    <TableRow>
+                                                        <TableCell
                                                             sx={{
-                                                                margin: "0.5rem",
-                                                                background: "#d31d30",
-                                                                ":hover": {
-                                                                    background: "#86121e",
-                                                                },
+                                                                width: "37%",
                                                             }}
                                                         >
-                                                            Yelp Page
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            </Table>
-                                        </Card>
+                                                            <img
+                                                                src={randomRestaurant.image_url}
+                                                                alt='restaurant'
+                                                                style={{
+                                                                    width: "100%",
+                                                                    height: "15vh",
+                                                                    aspectRatio: "16/9",
+                                                                    objectFit: "cover",
+                                                                }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="h5" component="div">
+                                                                {randomRestaurant.name}
+                                                            </Typography>
+                                                            <Rating disabled value={randomRestaurant.rating} precision={0.5} />
+                                                            <Typography variant="h5" color="text.secondary">
+                                                                {randomRestaurant.price}
+                                                            </Typography>
+                                                            <Typography variant="body2" color="text.secondary">
+                                                                {getCategories(randomRestaurant.categories)}
+                                                            </Typography>
+                                                            <Button
+                                                                onClick={() => { randomRestaurant.url && window.open(randomRestaurant.url, "_blank") }}
+                                                                sx={{
+                                                                    margin: "0.5rem",
+                                                                    background: "#d31d30",
+                                                                    ":hover": {
+                                                                        background: "#86121e",
+                                                                    },
+                                                                }}
+                                                            >
+                                                                Yelp Page
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </Table>
+                                            </Card>
+                                        </Box>
                                     </Box>
-                                </Box>
-                            </Modal>
+                                </Modal>
+                            }
 
                         </>
                     )
