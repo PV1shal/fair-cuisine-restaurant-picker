@@ -7,6 +7,7 @@ import RegisterPage from './Components/Register';
 import CuisineSection from './Components/CusineSection';
 import { useEffect, useState } from 'react';
 import { AppBar, Avatar, Box, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
+import ResultScreen from './Components/ResultScreen';
 
 // Add all pages in Components and add routes here.
 // All API calls should be in Services.
@@ -60,6 +61,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/home" element={<Home />} />
           <Route path="/cuisineselection" element={<CuisineSection />} />
+          <Route path="/result" element={<ResultScreen />} />
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>
       }

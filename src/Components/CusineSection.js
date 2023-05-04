@@ -104,7 +104,9 @@ const CuisineSection = () => {
         }
 
         // This will be used to send the data to the result page and navigate to it.
-        // navigate("/result", { state: { location, radius, cusinesSelected } });
+        const cuisines = cusinesSelected.map((cuisine) => cuisine.toLowerCase());           // Convert all cuisines to lowercase for API
+        const Cuisines = [...new Set(cuisines.map((cuisine) => cuisine.toLowerCase()))];    // Remove duplicates
+        navigate("/result", { state: { location, radius, Cuisines } });
     }
 
     return (
