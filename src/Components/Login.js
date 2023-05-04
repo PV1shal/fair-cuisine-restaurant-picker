@@ -12,7 +12,8 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (window.localStorage.getItem("user")) {
-            window.location.href = "/cuisineselection";
+            // window.location.href = "/cuisineselection";
+            window.location.href = "/home";
         }
     }, []);
 
@@ -29,10 +30,11 @@ const LoginPage = () => {
                 "password": password
             }
         };
-        UserServices.getUserById(username, data)
+        UserServices.getUserByIdLogin(username, data)
             .then((response) => {
                 window.localStorage.setItem("user", username);
-                window.location.href = "/cuisineselection";
+                // window.location.href = "/cuisineselection";
+                window.location.href = "/home";
             })
             .catch((error) => {
                 console.log(error);
