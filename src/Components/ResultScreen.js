@@ -21,10 +21,6 @@ const ResultScreen = () => {
     const [priceFilter, setPriceFilter] = useState('$$$');
     const [typeOfRestaurantsFound, setTypeOfRestaurantsFound] = useState('');
 
-    const [user, setUser] = useState();
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [validRests, setValidRests] = useState([]);
-
     useEffect(() => {
         setLoading(true);
         const data = {
@@ -62,20 +58,6 @@ const ResultScreen = () => {
                 setLoading(false);
             });
     }, []);
-
-    const handleMenuClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleSignout = () => {
-        window.localStorage.removeItem("user");
-        setAnchorEl(null);
-        window.location.href = "/";
-    };
 
     const getCategories = (data) => {
         return data.map((category) => {
@@ -127,7 +109,6 @@ const ResultScreen = () => {
     const getValidRestaurants = () => {
 
         if (restaurants.length === 0) {
-            console.log("No restaurants found");
             return (
                 <Card
                     sx={{
@@ -305,10 +286,6 @@ const ResultScreen = () => {
             </div>
         );
     }
-
-    useEffect(() => {
-        setUser(window.localStorage.getItem("user"));
-    }, []);
 
     return (
         <Box>
