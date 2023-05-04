@@ -1,5 +1,5 @@
 import { Button, CardContent, Modal } from '@mui/joy';
-import { Typography, AppBar, Box, Menu, MenuItem, Card, CardHeader, Toolbar, Avatar, Grid, Autocomplete, TextField } from '@mui/material';
+import { Typography, Box, Card, CardHeader, Grid, Autocomplete, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { allYelpCategories } from './YelpCuisineList';
 import InputAdornment from '@mui/material/InputAdornment';
