@@ -45,7 +45,15 @@ const CuisineSection = () => {
                             setLocation(address);
                         });
                     } else if (result.state === "prompt") {
-                        console.log(result.state);
+                        navigator.geolocation.getCurrentPosition(async (position) => {
+                            const { latitude, longitude } = position.coords;
+                            const address = await getAddressFromLatLng(latitude, longitude);
+                            setLocation(address);
+                        }, function (error) {
+                            console.error(error);
+                            setOpenErrorModal(true);
+                            setError("Please allow location access to use this app");
+                        });
                     } else if (result.state === "denied") {
                         alert("Please allow location access to use this app");
                     }
