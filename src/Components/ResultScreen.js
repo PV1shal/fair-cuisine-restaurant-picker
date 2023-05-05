@@ -1,7 +1,7 @@
 import { Button, CardContent, FormControl, FormLabel, Modal, Radio, RadioGroup } from '@mui/joy';
 import { Alert, BottomNavigation, CircularProgress, Typography, Box, Card, Grid, Table, TableRow, TableCell, Rating, Chip, FormControlLabel } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { AttachMoney, Close } from '@mui/icons-material';
+import { ArrowBack, AttachMoney, Close } from '@mui/icons-material';
 import { useLocation } from 'react-router-dom';
 import YelpServices from '../Services/YelpServices';
 
@@ -310,6 +310,20 @@ const ResultScreen = () => {
 
     return (
         <Box>
+            <ArrowBack
+                titleAccess='Back to Cuisines Selection Page'
+                sx={{
+                    fontSize: "40px",
+                    color: "#208cac",
+                    top: "7%",
+                    left: "2%",
+                    display: "flex",
+                    ":hover": {
+                        cursor: "pointer"
+                    }
+                }}
+                onClick={() => window.location.href = "/cuisineselection"}
+            />
             {
                 isLoading
                     ? <CircularProgress />

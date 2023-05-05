@@ -175,7 +175,7 @@ const CuisineSection = () => {
                                         }}
                                     />
                                     <TextField
-                                        placeholder='Enter Search Radius'
+                                        placeholder='Enter Search Radius (in Kilometers)'
                                         value={radius}
                                         onChange={(e) => setRadius(e.target.value)}
                                         variant="outlined"
