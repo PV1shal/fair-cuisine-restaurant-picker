@@ -77,7 +77,7 @@ const ResultScreen = () => {
                 }
             })
             .catch((err) => {
-                console.log(err);
+                result = false;
             });
         return result;
     }

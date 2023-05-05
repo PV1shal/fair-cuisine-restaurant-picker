@@ -1,5 +1,5 @@
-import { Button, CardContent, Modal } from '@mui/joy';
-import { Typography, Box, Card, CardHeader, Grid, Autocomplete, TextField } from '@mui/material';
+import { Button, CardContent, IconButton, Modal } from '@mui/joy';
+import { Alert, Typography, Box, Card, CardHeader, Grid, Autocomplete, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { allYelpCategories } from './YelpCuisineList';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -139,6 +139,7 @@ const CuisineSection = () => {
                                         id="person1-cusines"
                                         onChange={handlePerson1CusineChange}
                                         options={allYelpCategories}
+                                        getOptionDisabled={(option) => person1Cusines.length >= 1}
                                         getOptionLabel={(option) => option.title}
                                         renderInput={(params) => (
                                             <TextField
@@ -158,6 +159,7 @@ const CuisineSection = () => {
                                         id="person2-cusines"
                                         onChange={handlePerson2CusineChange}
                                         options={allYelpCategories}
+                                        getOptionDisabled={(option) => person2Cusines.length >= 1}
                                         getOptionLabel={(option) => option.title}
                                         renderInput={(params) => (
                                             <TextField
