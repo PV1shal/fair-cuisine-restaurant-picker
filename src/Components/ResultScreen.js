@@ -28,30 +28,33 @@ const ResultScreen = () => {
 
         YelpServices.getBusinesses(data)
             .then((res) => {
-                setRestaurants(res.data.yelpAPI);
-                var openRestaurants = [];
-
-                res.data.yelpAPI.map((restaurant) => {
-                    if (checkIsOpen(restaurant)) {
-                        openRestaurants.push(restaurant);
-                    }
-                });
-
-                setRestaurants(openRestaurants);
-
-                if (res.status === 200) {
-                    setTypeOfRestaurantsFound("We found some restaurants that had all the cuisines you selected!");
-                } else if (res.status === 201) {
-                    setTypeOfRestaurantsFound("We couldn't find any restaurants which had all the cuisines you selected, but we found some that had some of them.");
-                }
+                var allRestaurants = res.data.yelpAPI;
+                console.log(allRestaurants);
+                Promise.all(allRestaurants.map(checkIsOpen))
+                    .then((isOpenArr) => {
+                        const openRestaurants = allRestaurants.filter((restaurant, index) => isOpenArr[index]);
+                        setRestaurants(openRestaurants);
+                        if (res.status === 200) {
+                            setTypeOfRestaurantsFound("We found some restaurants that had all the cuisines you selected!");
+                        } else if (res.status === 201) {
+                            setTypeOfRestaurantsFound("We couldn't find any restaurants which had all the cuisines you selected, but we found some that had some of them.");
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        setRestaurants([]);
+                    })
+                    .finally(() => {
+                        setLoading(false);
+                    });
             })
             .catch((err) => {
                 console.log(err);
-            })
-            .finally(() => {
+                setRestaurants([]);
                 setLoading(false);
             });
     }, []);
+
 
     const getCategories = (data) => {
         return data.map((category) => {
