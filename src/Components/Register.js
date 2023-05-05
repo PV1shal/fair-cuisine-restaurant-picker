@@ -15,7 +15,8 @@ const RegisterPage = () => {
 
     useEffect(() => {
         if (window.localStorage.getItem("user")) {
-            window.location.href = "/cuisineselection";
+            // window.location.href = "/cuisineselection";
+            window.location.href = "/home";
         }
     }, []);
 
@@ -40,7 +41,8 @@ const RegisterPage = () => {
         UserServices.createUser(data)
             .then((response) => {
                 window.localStorage.setItem("user", username);
-                window.location.href = "/cuisineselection";
+                // window.location.href = "/cuisineselection";
+                window.location.href = "/home";
             })
             .catch((error) => {
                 console.log(error);
@@ -53,7 +55,7 @@ const RegisterPage = () => {
 
     return (
         <div className="mainDiv">
-            <Box sx={{ width: "50vw", height: "40vh", boxShadow: 10, gap: 2, borderRadius: 3 }}>
+            <Box sx={{ width: "50vw", boxShadow: 10, gap: 2, borderRadius: 3 }}>
                 <Card sx={{ height: "100%", borderRadius: 3 }} >
                     <Table sx={{ height: "100%" }} >
                         <TableRow>

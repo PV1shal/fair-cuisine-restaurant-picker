@@ -1,5 +1,5 @@
-import { Button, CardContent, Modal } from '@mui/joy';
-import { Typography, AppBar, Box, Menu, MenuItem, Card, CardHeader, Toolbar, Avatar, Grid, Autocomplete, TextField } from '@mui/material';
+import { Button, CardContent, IconButton, Modal } from '@mui/joy';
+import { Alert, Typography, Box, Card, CardHeader, Grid, Autocomplete, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { allYelpCategories } from './YelpCuisineList';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -9,8 +9,6 @@ import FoodGuessVideo from '../Assets/FooDCuisineAsset.mp4';
 
 const CuisineSection = () => {
 
-    const [user, setUser] = useState();
-    const [anchorEl, setAnchorEl] = useState(null);
     const [location, setLocation] = useState("");
     const [person1Cusines, setPerson1Cusines] = useState([]);
     const [person2Cusines, setPerson2Cusines] = useState([]);
@@ -47,7 +45,15 @@ const CuisineSection = () => {
                             setLocation(address);
                         });
                     } else if (result.state === "prompt") {
-                        console.log(result.state);
+                        navigator.geolocation.getCurrentPosition(async (position) => {
+                            const { latitude, longitude } = position.coords;
+                            const address = await getAddressFromLatLng(latitude, longitude);
+                            setLocation(address);
+                        }, function (error) {
+                            console.error(error);
+                            setOpenErrorModal(true);
+                            setError("Please allow location access to use this app");
+                        });
                     } else if (result.state === "denied") {
                         alert("Please allow location access to use this app");
                     }
@@ -56,20 +62,6 @@ const CuisineSection = () => {
                     };
                 });
         }
-    };
-
-    const handleMenuClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleSignout = () => {
-        window.localStorage.removeItem("user");
-        setAnchorEl(null);
-        window.location.href = "/";
     };
 
     const handleLocationClick = () => {
@@ -120,28 +112,14 @@ const CuisineSection = () => {
         }
 
         // This will be used to send the data to the result page and navigate to it.
-        // navigate("/result", { state: { location, radius, cusinesSelected } });
+        // const cuisines = cusinesSelected.map((cuisine) => cuisine.toLowerCase());           // Convert all cuisines to lowercase for API
+        // const Cuisines = [...new Set(cuisines.map((cuisine) => cuisine.toLowerCase()))];    // Remove duplicates
+        const Cuisines = [...new Set(cusinesSelected)];    // Remove duplicates
+        navigate("/result", { state: { location, radius, Cuisines } });
     }
-
-
-    useEffect(() => {
-        setUser(window.localStorage.getItem("user"));
-    }, []);
 
     return (
         <Box>
-            <AppBar position="static">
-                <Toolbar sx={{ display: 'flex', alignItems: 'center', background: "#d31d30" }}>
-                    <Typography variant="h4" component="div">
-                        Couple<b>Eats</b>
-                    </Typography>
-                    <Box sx={{ flexGrow: 1 }} />
-                    <Avatar alt={user} onClick={handleMenuClick} sx={{ ":hover": { background: "#86121e", transition: "0.5s" } }} />
-                    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                        <MenuItem onClick={handleSignout}>Sign out</MenuItem>
-                    </Menu>
-                </Toolbar>
-            </AppBar>
             <Grid
                 container
                 spacing={0}
@@ -161,6 +139,7 @@ const CuisineSection = () => {
                                         id="person1-cusines"
                                         onChange={handlePerson1CusineChange}
                                         options={allYelpCategories}
+                                        getOptionDisabled={(option) => person1Cusines.length >= 1}
                                         getOptionLabel={(option) => option.title}
                                         renderInput={(params) => (
                                             <TextField
@@ -180,6 +159,7 @@ const CuisineSection = () => {
                                         id="person2-cusines"
                                         onChange={handlePerson2CusineChange}
                                         options={allYelpCategories}
+                                        getOptionDisabled={(option) => person2Cusines.length >= 1}
                                         getOptionLabel={(option) => option.title}
                                         renderInput={(params) => (
                                             <TextField
@@ -195,9 +175,14 @@ const CuisineSection = () => {
                                         }}
                                     />
                                     <TextField
-                                        placeholder='Enter Search Radius'
+                                        placeholder='Enter Search Radius (max. 25 Kilometers)'
                                         value={radius}
-                                        onChange={(e) => setRadius(e.target.value)}
+                                        onChange={(e) => {
+                                            const inputValue = e.target.value;
+                                            if (inputValue === '' || (parseInt(inputValue, 10) <= 25)) {
+                                                setRadius(inputValue);
+                                            }
+                                        }}
                                         variant="outlined"
                                         sx={{
                                             border: '0px solid black',
