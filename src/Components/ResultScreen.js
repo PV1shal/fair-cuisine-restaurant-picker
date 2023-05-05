@@ -1,29 +1,20 @@
 import { Button, CardContent, FormControl, FormLabel, Modal, Radio, RadioGroup } from '@mui/joy';
-import { CircularProgress, Typography, Box, Card, Grid, Table, TableRow, TableCell, Rating, Chip, ToggleButtonGroup, ToggleButton, FormControlLabel } from '@mui/material';
+import { Alert, BottomNavigation, CircularProgress, Typography, Box, Card, Grid, Table, TableRow, TableCell, Rating, Chip, FormControlLabel } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { allYelpCategories } from './YelpCuisineList';
-import InputAdornment from '@mui/material/InputAdornment';
-import { AttachMoney, Close, MyLocation, Star } from '@mui/icons-material';
-import { useLocation, useNavigate } from 'react-router-dom';
-import FoodGuessVideo from '../Assets/FooDCuisineAsset.mp4';
-import CuisineSection from './CusineSection';
+import { ArrowBack, AttachMoney, Close } from '@mui/icons-material';
+import { useLocation } from 'react-router-dom';
 import YelpServices from '../Services/YelpServices';
 
 const ResultScreen = () => {
     const location = useLocation();
-    const pos = location.state.location;
-    const [radius, setRadius] = useState(location.state.radius);
-    const cuisines = location.state.Cuisines;
 
     const [restaurants, setRestaurants] = useState([]);
     const [isLoading, setLoading] = useState(false);
     const [ratingFilter, setRatingFilter] = useState('1');
     const [priceFilter, setPriceFilter] = useState('$$$');
     const [typeOfRestaurantsFound, setTypeOfRestaurantsFound] = useState('');
-
-    const [user, setUser] = useState();
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [validRests, setValidRests] = useState([]);
+    const [openRandomRestaurantModal, setOpenRandomRestaurantModal] = useState(false);
+    const [randomRestaurant, setRandomRestaurant] = useState();
 
     useEffect(() => {
         setLoading(true);
@@ -38,6 +29,16 @@ const ResultScreen = () => {
         YelpServices.getBusinesses(data)
             .then((res) => {
                 setRestaurants(res.data.yelpAPI);
+                var openRestaurants = [];
+
+                res.data.yelpAPI.map((restaurant) => {
+                    if (checkIsOpen(restaurant)) {
+                        openRestaurants.push(restaurant);
+                    }
+                });
+
+                setRestaurants(openRestaurants);
+
                 if (res.status === 200) {
                     setTypeOfRestaurantsFound("We found some restaurants that had all the cuisines you selected!");
                 } else if (res.status === 201) {
@@ -52,20 +53,6 @@ const ResultScreen = () => {
             });
     }, []);
 
-    const handleMenuClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleSignout = () => {
-        window.localStorage.removeItem("user");
-        setAnchorEl(null);
-        window.location.href = "/";
-    };
-
     const getCategories = (data) => {
         return data.map((category) => {
             // console.log(category);
@@ -79,17 +66,20 @@ const ResultScreen = () => {
         });
     }
 
-    const checkIsOpen = (restaurant) => {
-        YelpServices.getBusinessesByIDs(restaurant.id)
+    const checkIsOpen = async (restaurant) => {
+        var result = false;
+        await YelpServices.getBusinessesByIDs(restaurant.id)
             .then((res) => {
-                if (res.data.business.hours[0].is_open_now === true) {
-                    return true;
+                if (res.data.business.hours[0].is_open_now) {
+                    result = true;
+                } else {
+                    result = false;
                 }
-                return false;
             })
             .catch((err) => {
-                console.log(err);
+                result = false;
             });
+        return result;
     }
 
     const handleRatingFilterChange = (e) => {
@@ -110,67 +100,8 @@ const ResultScreen = () => {
     };
 
     const getValidRestaurants = () => {
-        var len = 0;
-        const filteredRestaurants = getFilteredRestaurants();
-        const restaurantCards = filteredRestaurants.map((restaurant) => {
-            if (checkIsOpen(restaurant) === true) {
-                console.log("open rest");
-                len++;
-                return (
-                    <Card
-                        key={restaurant.id}
-                        sx={{ borderRadius: 3, margin: 3, boxShadow: 10 }}
-                    >
-                        <Table>
-                            <TableRow>
-                                <TableCell
-                                    sx={{
-                                        width: "37%",
-                                    }}
-                                >
-                                    <img
-                                        src={restaurant.image_url}
-                                        alt='restaurant'
-                                        style={{
-                                            width: "100%",
-                                            height: "15vh",
-                                            aspectRatio: "16/9",
-                                            objectFit: "cover",
-                                        }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="h5" component="div">
-                                        {restaurant.name}
-                                    </Typography>
-                                    <Rating disabled value={restaurant.rating} precision={0.5} />
-                                    <Typography variant="h5" color="text.secondary">
-                                        {restaurant.price}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {getCategories(restaurant.categories)}
-                                    </Typography>
-                                    <Button
-                                        onClick={() => { restaurant.url && window.open(restaurant.url, "_blank") }}
-                                        sx={{
-                                            margin: "0.5rem",
-                                            background: "#d31d30",
-                                            ":hover": {
-                                                background: "#86121e",
-                                            },
-                                        }}
-                                    >
-                                        Yelp Page
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        </Table>
-                    </Card>
-                );
-            }
-        });
 
-        if (len === 0) {
+        if (restaurants.length === 0) {
             return (
                 <Card
                     sx={{
@@ -188,9 +119,68 @@ const ResultScreen = () => {
                     </CardContent>
                 </Card>
             );
-        } else {
-            return restaurantCards;
         }
+
+        const filteredRestaurants = getFilteredRestaurants();
+        return filteredRestaurants.map((restaurant) => {
+            return (
+                <Card
+                    key={restaurant.id}
+                    sx={{ borderRadius: 3, margin: 3, boxShadow: 10 }}
+                >
+                    <Table>
+                        <TableRow>
+                            <TableCell
+                                sx={{
+                                    width: "37%",
+                                }}
+                            >
+                                <img
+                                    src={restaurant.image_url}
+                                    alt='restaurant'
+                                    style={{
+                                        width: "100%",
+                                        height: "15vh",
+                                        aspectRatio: "16/9",
+                                        objectFit: "cover",
+                                    }}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="h5" component="div">
+                                    {restaurant.name}
+                                </Typography>
+                                <Rating readOnly value={restaurant.rating} precision={0.5} />
+                                <Typography variant="h5" color="text.secondary">
+                                    {restaurant.price}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {getCategories(restaurant.categories)}
+                                </Typography>
+                                <Button
+                                    onClick={() => { restaurant.url && window.open(restaurant.url, "_blank") }}
+                                    sx={{
+                                        margin: "0.5rem",
+                                        background: "#d31d30",
+                                        ":hover": {
+                                            background: "#86121e",
+                                        },
+                                    }}
+                                >
+                                    Yelp Page
+                                </Button>
+                            </TableCell>
+                        </TableRow>
+                    </Table>
+                </Card>
+            );
+        });
+    }
+
+    const handleSuggestions = () => {
+        const filteredRestaurants = getFilteredRestaurants();
+        setRandomRestaurant(filteredRestaurants[Math.floor(Math.random() * filteredRestaurants.length)]);
+        setOpenRandomRestaurantModal(true);
     }
 
     const filterRadioButtons = () => {
@@ -292,16 +282,48 @@ const ResultScreen = () => {
                         </RadioGroup>
                     </FormControl>
                 </div>
+                <div style={{ margin: 5 }}>
+                    <label>Cuisines you've picked</label><br />
+                    {
+                        location.state.Cuisines.map((cuisine) => {
+                            return (
+                                <Chip
+                                    key={cuisine}
+                                    label={cuisine}
+                                    style={{ margin: "0.5rem" }}
+                                />
+                            );
+                        })
+                    }
+                </div>
+                <div>
+                    <label>Radius you've picked</label><br />
+                    <Chip
+                        key={location.state.radius}
+                        label={location.state.radius + " km"}
+                        style={{ margin: "0.5rem" }}
+                    />
+                </div>
             </div>
         );
     }
 
-    useEffect(() => {
-        setUser(window.localStorage.getItem("user"));
-    }, []);
-
     return (
         <Box>
+            <ArrowBack
+                titleAccess='Back to Cuisines Selection Page'
+                sx={{
+                    fontSize: "40px",
+                    color: "#208cac",
+                    top: "7%",
+                    left: "2%",
+                    display: "flex",
+                    ":hover": {
+                        cursor: "pointer"
+                    }
+                }}
+                onClick={() => window.location.href = "/cuisineselection"}
+            />
             {
                 isLoading
                     ? <CircularProgress />
@@ -316,20 +338,99 @@ const ResultScreen = () => {
                                     justifyContent="center"
                                     style={{ minHeight: '90vh' }}
                                 >
+                                    <Alert severity="info" sx={{ fontSize: 18 }}>
+                                        {typeOfRestaurantsFound}
+                                    </Alert>
                                     <Grid item xl={6}>
                                         <Box sx={{ borderRadius: 3 }}>
-                                            <Typography variant="body2" component="div">
-                                                {typeOfRestaurantsFound}
-                                            </Typography>
                                             {getValidRestaurants()}
                                         </Box>
                                     </Grid>
+                                    <div style={{ position: "fixed", bottom: 0, left: 0, width: "100%", height: "3%", paddingBottom: "14px", paddingTop: "10px", backgroundColor: "white", boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)" }}>
+                                        <Button onClick={handleSuggestions} sx={{ background: "#208cac", fontSize: "17px" }} >Suggest us one!</Button>
+                                    </div>
                                 </Grid>
 
                                 {filterRadioButtons()}
 
                             </Box>
-                            <Button>Suggest us one!</Button>
+
+                            {
+                                randomRestaurant &&
+
+                                <Modal
+                                    open={openRandomRestaurantModal}
+                                    onClose={() => setOpenRandomRestaurantModal(false)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <Box>
+                                        <Box sx={{
+                                            position: 'relative',
+                                            maxWidth: '40vw',
+                                            bgcolor: 'background.paper',
+                                            border: '1px solid #000',
+                                            boxShadow: 24,
+                                            p: '1.5vw'
+                                        }}>
+                                            <Close onClick={() => setOpenRandomRestaurantModal(false)} sx={{ position: 'absolute', top: 0, right: 0, cursor: 'pointer' }} />
+                                            <Card
+                                                key={randomRestaurant.id}
+                                                sx={{ borderRadius: 3, margin: 3, boxShadow: 10 }}
+                                            >
+                                                <Table>
+                                                    <TableRow>
+                                                        <TableCell
+                                                            sx={{
+                                                                width: "37%",
+                                                            }}
+                                                        >
+                                                            <img
+                                                                src={randomRestaurant.image_url}
+                                                                alt='restaurant'
+                                                                style={{
+                                                                    width: "100%",
+                                                                    height: "15vh",
+                                                                    aspectRatio: "16/9",
+                                                                    objectFit: "cover",
+                                                                }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="h5" component="div">
+                                                                {randomRestaurant.name}
+                                                            </Typography>
+                                                            <Rating disabled value={randomRestaurant.rating} precision={0.5} />
+                                                            <Typography variant="h5" color="text.secondary">
+                                                                {randomRestaurant.price}
+                                                            </Typography>
+                                                            <Typography variant="body2" color="text.secondary">
+                                                                {getCategories(randomRestaurant.categories)}
+                                                            </Typography>
+                                                            <Button
+                                                                onClick={() => { randomRestaurant.url && window.open(randomRestaurant.url, "_blank") }}
+                                                                sx={{
+                                                                    margin: "0.5rem",
+                                                                    background: "#d31d30",
+                                                                    ":hover": {
+                                                                        background: "#86121e",
+                                                                    },
+                                                                }}
+                                                            >
+                                                                Yelp Page
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </Table>
+                                            </Card>
+                                        </Box>
+                                    </Box>
+                                </Modal>
+                            }
+
                         </>
                     )
             }

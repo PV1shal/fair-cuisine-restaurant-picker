@@ -1,5 +1,5 @@
-import { Button, CardContent, Modal } from '@mui/joy';
-import { Typography, AppBar, Box, Menu, MenuItem, Card, CardHeader, Toolbar, Avatar, Grid, Autocomplete, TextField } from '@mui/material';
+import { Button, CardContent, IconButton, Modal } from '@mui/joy';
+import { Alert, Typography, Box, Card, CardHeader, Grid, Autocomplete, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { allYelpCategories } from './YelpCuisineList';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -112,8 +112,9 @@ const CuisineSection = () => {
         }
 
         // This will be used to send the data to the result page and navigate to it.
-        const cuisines = cusinesSelected.map((cuisine) => cuisine.toLowerCase());           // Convert all cuisines to lowercase for API
-        const Cuisines = [...new Set(cuisines.map((cuisine) => cuisine.toLowerCase()))];    // Remove duplicates
+        // const cuisines = cusinesSelected.map((cuisine) => cuisine.toLowerCase());           // Convert all cuisines to lowercase for API
+        // const Cuisines = [...new Set(cuisines.map((cuisine) => cuisine.toLowerCase()))];    // Remove duplicates
+        const Cuisines = [...new Set(cusinesSelected)];    // Remove duplicates
         navigate("/result", { state: { location, radius, Cuisines } });
     }
 
@@ -138,6 +139,7 @@ const CuisineSection = () => {
                                         id="person1-cusines"
                                         onChange={handlePerson1CusineChange}
                                         options={allYelpCategories}
+                                        getOptionDisabled={(option) => person1Cusines.length >= 1}
                                         getOptionLabel={(option) => option.title}
                                         renderInput={(params) => (
                                             <TextField
@@ -157,6 +159,7 @@ const CuisineSection = () => {
                                         id="person2-cusines"
                                         onChange={handlePerson2CusineChange}
                                         options={allYelpCategories}
+                                        getOptionDisabled={(option) => person2Cusines.length >= 1}
                                         getOptionLabel={(option) => option.title}
                                         renderInput={(params) => (
                                             <TextField
@@ -172,7 +175,7 @@ const CuisineSection = () => {
                                         }}
                                     />
                                     <TextField
-                                        placeholder='Enter Search Radius'
+                                        placeholder='Enter Search Radius (in Kilometers)'
                                         value={radius}
                                         onChange={(e) => setRadius(e.target.value)}
                                         variant="outlined"
