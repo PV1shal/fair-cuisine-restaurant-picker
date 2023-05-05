@@ -77,6 +77,7 @@ const RegisterPage = () => {
                                     />
 
                                     <TextField id="outlined-basic"
+                                        type="password"
                                         label="Password"
                                         variant="outlined"
                                         sx={{ margin: 1, width: "95%", background: "#f5f5f5" }}
@@ -88,6 +89,7 @@ const RegisterPage = () => {
                                     />
 
                                     <TextField id="outlined-basic"
+                                        type="password"
                                         label="Confirm Password"
                                         variant="outlined"
                                         sx={{ margin: 1, width: "95%", background: "#f5f5f5" }}

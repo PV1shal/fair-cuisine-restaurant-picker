@@ -1,5 +1,5 @@
-import { Button, CardContent, FormControl, FormLabel, Modal, Radio, RadioGroup } from '@mui/joy';
-import { Alert, BottomNavigation, CircularProgress, Typography, Box, Card, Grid, Table, TableRow, TableCell, Rating, Chip, FormControlLabel, MenuItem, Select, InputLabel } from '@mui/material';
+import { Button, CardContent, FormControl, Modal } from '@mui/joy';
+import { Alert, CircularProgress, Typography, Box, Card, Grid, Table, TableRow, TableCell, Rating, Chip, Switch, MenuItem, Select, InputLabel } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { ArrowBack, AttachMoney, Close } from '@mui/icons-material';
 import { useLocation } from 'react-router-dom';
@@ -9,12 +9,14 @@ const ResultScreen = () => {
     const location = useLocation();
 
     const [restaurants, setRestaurants] = useState([]);
+    const [openRestaurantsOnly, setOpenRestaurantsOnly] = useState([]);
     const [isLoading, setLoading] = useState(false);
     const [ratingFilter, setRatingFilter] = useState('1');
     const [priceFilter, setPriceFilter] = useState('$$$');
     const [typeOfRestaurantsFound, setTypeOfRestaurantsFound] = useState('');
     const [openRandomRestaurantModal, setOpenRandomRestaurantModal] = useState(false);
     const [randomRestaurant, setRandomRestaurant] = useState();
+    const [restaurantIsOpen, setRestaurantsIsOpen] = useState(true);
 
     useEffect(() => {
         setLoading(true);
@@ -29,16 +31,11 @@ const ResultScreen = () => {
         YelpServices.getBusinesses(data)
             .then((res) => {
                 var allRestaurants = res.data.yelpAPI;
-                console.log(allRestaurants);
+                setRestaurants(allRestaurants);
                 Promise.all(allRestaurants.map(checkIsOpen))
                     .then((isOpenArr) => {
                         const openRestaurants = allRestaurants.filter((restaurant, index) => isOpenArr[index]);
-                        setRestaurants(openRestaurants);
-                        if (res.status === 200) {
-                            setTypeOfRestaurantsFound("We found some open restaurants that had all the cuisines you selected!");
-                        } else if (res.status === 201) {
-                            setTypeOfRestaurantsFound("We couldn't find any restaurants with all the cuisines selected, but we found some open that had one of them.");
-                        }
+                        setOpenRestaurantsOnly(openRestaurants);
                     })
                     .catch((err) => {
                         console.log(err);
@@ -47,6 +44,11 @@ const ResultScreen = () => {
                     .finally(() => {
                         setLoading(false);
                     });
+                if (res.status === 200) {
+                    setTypeOfRestaurantsFound("We found some restaurants that had all the categories you selected!");
+                } else if (res.status === 201) {
+                    setTypeOfRestaurantsFound("We couldn't find any restaurants with all the categories selected, but we found some that had one of them.");
+                }
             })
             .catch((err) => {
                 console.log(err);
@@ -79,7 +81,7 @@ const ResultScreen = () => {
                 }
             })
             .catch((err) => {
-                result = false;
+                result = true;
             });
         return result;
     }
@@ -93,17 +95,18 @@ const ResultScreen = () => {
     }
 
     const getFilteredRestaurants = () => {
-        if (!restaurants) {
+        var tempRest = restaurantIsOpen ? openRestaurantsOnly : restaurants;
+        if (!tempRest) {
             return;
         }
-        return restaurants.filter((restaurant) => {
+        return tempRest.filter((restaurant) => {
             return restaurant.rating >= ratingFilter && restaurant.price <= priceFilter;
         });
     };
 
     const getValidRestaurants = () => {
-
-        if (restaurants.length === 0) {
+        const filteredRestaurants = getFilteredRestaurants();
+        if (filteredRestaurants.length === 0 && isLoading === false) {
             return (
                 <Card
                     sx={{
@@ -116,14 +119,13 @@ const ResultScreen = () => {
                 >
                     <CardContent>
                         <Typography variant="h5" component="div">
-                            No restaurants found within radius or with selected cuisines or open now
+                            No restaurants found with the selected cuisine and filters.
                         </Typography>
                     </CardContent>
                 </Card>
             );
         }
 
-        const filteredRestaurants = getFilteredRestaurants();
         return filteredRestaurants.map((restaurant) => {
             return (
                 <Card
@@ -206,6 +208,10 @@ const ResultScreen = () => {
         setOpenRandomRestaurantModal(true);
     }
 
+    const handleSliderChange = (e) => {
+        setRestaurantsIsOpen(e.target.checked);
+    };
+
     const filterRadioButtons = () => {
         return (
             <div style={{
@@ -278,6 +284,18 @@ const ResultScreen = () => {
                         style={{ margin: "0.5rem" }}
                     />
                 </div>
+                <div
+                    style={{
+                        marginLeft: "20px"
+                    }}
+                >
+                    <label>Open Restaurants only!</label><br />
+                    <Switch
+                        checked={restaurantIsOpen}
+                        onChange={handleSliderChange}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                </div>
             </div>
         );
     }
@@ -311,7 +329,7 @@ const ResultScreen = () => {
                     ? <CircularProgress />
                     : (
                         <>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: "4%" }}>
                                 <Grid
                                     container
                                     spacing={0}
@@ -351,17 +369,17 @@ const ResultScreen = () => {
                                         <Box sx={{
                                             position: 'relative',
                                             maxWidth: '40vw',
-                                                bgcolor: 'transparent',
+                                                bgcolor: 'rgba(255, 255, 255, 0.6)',
                                                 borderRadius: "10px",
                                             border: '1px solid #000',
                                             boxShadow: 24,
                                             p: '1.5vw'
                                         }}>
                                             <Close onClick={() => setOpenRandomRestaurantModal(false)} sx={{ position: 'absolute', top: 0, right: 0, cursor: 'pointer' }} />
-                                            <Card
+                                                {/* <Card
                                                 key={randomRestaurant.id}
                                                 sx={{ borderRadius: 3, margin: 3, boxShadow: 10 }}
-                                            >
+                                            > */}
                                                 <Table>
                                                     <TableRow>
                                                         <TableCell
@@ -385,7 +403,7 @@ const ResultScreen = () => {
                                                             <Typography variant="h5" component="div">
                                                                 {randomRestaurant.name}
                                                             </Typography>
-                                                                <Rating readOnly value={randomRestaurant.rating} precision={0.5} />
+                                                            <Rating readOnly value={randomRestaurant.rating} precision={0.5} />
                                                             <Typography variant="h5" color="text.secondary">
                                                                 {randomRestaurant.price}
                                                             </Typography>
@@ -402,22 +420,22 @@ const ResultScreen = () => {
                                                                     },
                                                                 }}
                                                             >
-                                                                    Go to Yelp Page!
+                                                                Go to Yelp Page!
                                                             </Button>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                        <TableRow>
-                                                            <TableCell colSpan={2}>
-                                                                <Typography variant="body2" color="text.secondary">
-                                                                    How it was chosen: <br />
-                                                                    - First we filtered all the open restaurants based on your cuisines. <br />
-                                                                    - Then we filter out the restaurants that are based on your rating and price preferences. <br />
-                                                                    - Then we apply weighted randomize to be fair and randomly picked one of the restaurants that matched your preferences. <br />
-                                                                </Typography>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell colSpan={2}>
+                                                            <Typography variant="body2" color="text.secondary" sx={{ color: "black" }}>
+                                                                How it was chosen: <br />
+                                                                - First we filtered all the restaurants based on your choices. <br />
+                                                                - Then we filter out the restaurants that are based on your rating and price preferences. <br />
+                                                                - Then we apply weighted randomize to be fair and randomly picked one of the restaurants that matched your preferences. <br />
+                                                            </Typography>
                                                         </TableCell>
                                                     </TableRow>
                                                 </Table>
-                                            </Card>
+                                                {/* </Card> */}
                                         </Box>
                                     </Box>
                                 </Modal>
