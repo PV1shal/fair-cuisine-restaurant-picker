@@ -106,15 +106,20 @@ const ResultScreen = () => {
                 <Card
                     sx={{
                         borderRadius: 3,
-                        margin: 3,
+                        margin: 5,
                         boxShadow: 10,
-                        width: "100%",
-                        height: "5vh",
+                        width: "80%",
+                        height: "12vh",
                     }}
                 >
-                    <CardContent>
-                        <Typography variant="h5" component="div">
-                            No restaurants found within radius or with selected cuisines or open now
+                    <CardContent
+                        sx={{
+                            margin: 1,
+                            height: "12vh",
+                        }}
+                    >
+                        <Typography variant="h6" component="div">
+                            No matching restaurants found. Please adjust your search criteria and try again.
                         </Typography>
                     </CardContent>
                 </Card>
@@ -187,7 +192,7 @@ const ResultScreen = () => {
         return (
             <div style={{
                 position: "absolute",
-                top: "10%",
+                top: "15%",
                 right: "2%",
             }}>
                 <div>
@@ -315,7 +320,8 @@ const ResultScreen = () => {
                 sx={{
                     fontSize: "40px",
                     color: "#208cac",
-                    top: "7%",
+                    position: "absolute",
+                    top: "13%",
                     left: "2%",
                     display: "flex",
                     ":hover": {
@@ -346,7 +352,7 @@ const ResultScreen = () => {
                                             {getValidRestaurants()}
                                         </Box>
                                     </Grid>
-                                    <div style={{ position: "fixed", bottom: 0, left: 0, width: "100%", height: "3%", paddingBottom: "14px", paddingTop: "10px", backgroundColor: "white", boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)" }}>
+                                    <div style={{ position: "fixed", bottom: 0, left: 0, width: "100%", height: "5%", paddingBottom: "14px", paddingTop: "8px", backgroundColor: "white", boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)" }}>
                                         <Button onClick={handleSuggestions} sx={{ background: "#208cac", fontSize: "17px" }} >Suggest us one!</Button>
                                     </div>
                                 </Grid>
