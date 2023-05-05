@@ -55,6 +55,36 @@ const ResultScreen = () => {
             });
     }, []);
 
+    // useEffect(() => {
+    //     setLoading(true);
+    //     const data = {
+    //         "userPreferences": {
+    //             "location": location.state.location,
+    //             "categories": location.state.Cuisines,
+    //             "radius": parseInt(location.state.radius) * 1000
+    //         }
+    //     };
+
+    //     YelpServices.getBusinesses(data)
+    //         .then((res) => {
+    //             const allRestaurants = res.data.yelpAPI;
+    //             console.log(allRestaurants);
+    //             setRestaurants(allRestaurants);
+    //             if (res.status === 200) {
+    //                 setTypeOfRestaurantsFound("We found some restaurants that had all the cuisines you selected!");
+    //             } else if (res.status === 201) {
+    //                 setTypeOfRestaurantsFound("We couldn't find any restaurants which had all the cuisines you selected, but we found some that had some of them.");
+    //             }
+    //         })
+    //         .catch((err) => {
+    //             console.log(err);
+    //             setRestaurants([]);
+    //         })
+    //         .finally(() => {
+    //             setLoading(false);
+    //         });
+    // }, []);
+
 
     const getCategories = (data) => {
         return data.map((category) => {
@@ -182,7 +212,28 @@ const ResultScreen = () => {
 
     const handleSuggestions = () => {
         const filteredRestaurants = getFilteredRestaurants();
-        setRandomRestaurant(filteredRestaurants[Math.floor(Math.random() * filteredRestaurants.length)]);
+        const cuisines = location.state.Cuisines; // an array of cuisines selected by the user
+        const cuisineCounts = cuisines.map(cuisine => {
+            const matchingRestaurants = filteredRestaurants.filter(r => r.Cuisines && r.Cuisines.includes(cuisine));
+            return matchingRestaurants.length;
+        });
+
+        const lowestCount = Math.min(...cuisineCounts);
+        const lowestCuisineIndex = cuisineCounts.findIndex(count => count === lowestCount);
+
+        const restaurantsToAdd = [];
+        if (lowestCount > 0) {
+            const lowestCuisine = cuisines[lowestCuisineIndex];
+            const restaurantsWithLowestCuisine = filteredRestaurants.filter(r => r.Cuisines && r.Cuisines.includes(lowestCuisine));
+            const numToAdd = cuisineCounts.filter(count => count === lowestCount).length - restaurantsWithLowestCuisine.length;
+
+            for (let i = 0; i < numToAdd; i++) {
+                restaurantsToAdd.push(...restaurantsWithLowestCuisine);
+            }
+        }
+
+        const filteredRestaurantsWithDuplicates = [...filteredRestaurants, ...restaurantsToAdd];
+        setRandomRestaurant(filteredRestaurantsWithDuplicates[Math.floor(Math.random() * filteredRestaurantsWithDuplicates.length)]);
         setOpenRandomRestaurantModal(true);
     }
 
@@ -425,6 +476,13 @@ const ResultScreen = () => {
                                                             >
                                                                 Yelp Page
                                                             </Button>
+                                                                <Typography variant="body2" color="text.secondary">
+                                                                    How it was chosen: <br />
+                                                                    - First we filtered all the resutarants based on your cuisines. <br />
+                                                                    - Then we filtered all the restaurants which are closed at the moment. <br />
+                                                                    - Then we filter out the restaurants that are based on your rating and price preferences. <br />
+                                                                    - Then we apply weighted randomize to be fair and randomly picked one of the restaurants that matched your preferences. <br />
+                                                                </Typography>
                                                         </TableCell>
                                                     </TableRow>
                                                 </Table>
