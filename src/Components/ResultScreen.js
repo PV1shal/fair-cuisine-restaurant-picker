@@ -1,5 +1,5 @@
 import { Button, CardContent, FormControl, FormLabel, Modal, Radio, RadioGroup } from '@mui/joy';
-import { Alert, BottomNavigation, CircularProgress, Typography, Box, Card, Grid, Table, TableRow, TableCell, Rating, Chip, FormControlLabel } from '@mui/material';
+import { Alert, BottomNavigation, CircularProgress, Typography, Box, Card, Grid, Table, TableRow, TableCell, Rating, Chip, FormControlLabel, MenuItem, Select, InputLabel } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { ArrowBack, AttachMoney, Close } from '@mui/icons-material';
 import { useLocation } from 'react-router-dom';
@@ -35,9 +35,9 @@ const ResultScreen = () => {
                         const openRestaurants = allRestaurants.filter((restaurant, index) => isOpenArr[index]);
                         setRestaurants(openRestaurants);
                         if (res.status === 200) {
-                            setTypeOfRestaurantsFound("We found some restaurants that had all the cuisines you selected!");
+                            setTypeOfRestaurantsFound("We found some open restaurants that had all the cuisines you selected!");
                         } else if (res.status === 201) {
-                            setTypeOfRestaurantsFound("We couldn't find any restaurants which had all the cuisines you selected, but we found some that had some of them.");
+                            setTypeOfRestaurantsFound("We couldn't find any restaurants with all the cuisines selected, but we found some open that had one of them.");
                         }
                     })
                     .catch((err) => {
@@ -169,7 +169,7 @@ const ResultScreen = () => {
                                         },
                                     }}
                                 >
-                                    Yelp Page
+                                    Go to Yelp Page!
                                 </Button>
                             </TableCell>
                         </TableRow>
@@ -209,103 +209,50 @@ const ResultScreen = () => {
     const filterRadioButtons = () => {
         return (
             <div style={{
-                position: "absolute",
-                top: "15vh",
-                right: "2%",
+                display: "flex",
+                marginBottom: "10px"
             }}>
                 <div>
                     <FormControl>
-                        <FormLabel id="demo-row-radio-buttons-group-label">Filter by Rating (min rating)</FormLabel>
-                        <RadioGroup
-                            row
-                            aria-labelledby="demo-row-radio-buttons-group-label"
-                            name="row-radio-buttons-group"
+                        <InputLabel id="rating-filter-label">Filter by Rating (min rating)</InputLabel>
+                        <Select
+                            labelId="rating-filter-label"
+                            id="rating-filter"
                             value={ratingFilter}
                             onChange={handleRatingFilterChange}
                         >
-                            <FormControlLabel
-                                value="1"
-                                control={<Radio />}
-                                label={
-                                    <Rating value={1} readOnly />
-                                }
-                            />
-                            <FormControlLabel
-                                value="2"
-                                control={<Radio />}
-                                label={
-                                    <Rating value={2} readOnly />
-                                }
-                            />
-                            <FormControlLabel
-                                value="3"
-                                control={<Radio />}
-                                label={
-                                    <Rating value={3} readOnly />
-                                }
-                            />
-                            <FormControlLabel
-                                value="4"
-                                control={<Radio />}
-                                label={
-                                    <Rating value={4} readOnly />
-                                }
-                            />
-                            <FormControlLabel
-                                value="5"
-                                control={<Radio />}
-                                label={
-                                    <Rating value={5} readOnly />
-                                }
-                            />
-                        </RadioGroup>
+                            <MenuItem value={1}><Rating value={1} readOnly /></MenuItem>
+                            <MenuItem value={2}><Rating value={2} readOnly /></MenuItem>
+                            <MenuItem value={3}><Rating value={3} readOnly /></MenuItem>
+                            <MenuItem value={4}><Rating value={4} readOnly /></MenuItem>
+                            <MenuItem value={5}><Rating value={5} readOnly /></MenuItem>
+                        </Select>
                     </FormControl>
                 </div>
-                <br />
-                <div>
+                <div
+                    style={{
+                        marginLeft: "20px"
+                    }}
+                >
                     <FormControl>
-                        <FormLabel id="demo-row-radio-buttons-group-label">Filter by Price (max price)</FormLabel>
-                        <RadioGroup
-                            row
-                            aria-labelledby="demo-row-radio-buttons-group-label"
-                            name="row-radio-buttons-group"
+                        <InputLabel id="price-filter-label">Filter by Price (max price)</InputLabel>
+                        <Select
+                            labelId="price-filter-label"
+                            id="price-filter"
                             value={priceFilter}
                             onChange={handlePriceFilterChange}
                         >
-                            <FormControlLabel
-                                value="$"
-                                control={<Radio />}
-                                label={
-                                    <div>
-                                        <AttachMoney fontSize='small' sx={{ color: "#d31d30" }} />
-                                    </div>
-                                }
-                            />
-                            <FormControlLabel
-                                value="$$"
-                                control={<Radio />}
-                                label={
-                                    <div>
-                                        <AttachMoney fontSize='small' sx={{ color: "#d31d30" }} />
-                                        <AttachMoney fontSize='small' sx={{ color: "#d31d30" }} />
-                                    </div>
-                                }
-                            />
-                            <FormControlLabel
-                                value="$$$"
-                                control={<Radio />}
-                                label={
-                                    <div>
-                                        <AttachMoney fontSize='small' sx={{ color: "#d31d30" }} />
-                                        <AttachMoney fontSize='small' sx={{ color: "#d31d30" }} />
-                                        <AttachMoney fontSize='small' sx={{ color: "#d31d30" }} />
-                                    </div>
-                                }
-                            />
-                        </RadioGroup>
+                            <MenuItem value={"$"}><AttachMoney fontSize='small' sx={{ color: "#d31d30" }} /></MenuItem>
+                            <MenuItem value={"$$"}><div><AttachMoney fontSize='small' sx={{ color: "#d31d30" }} /><AttachMoney fontSize='small' sx={{ color: "#d31d30" }} /></div></MenuItem>
+                            <MenuItem value={"$$$"}><div><AttachMoney fontSize='small' sx={{ color: "#d31d30" }} /><AttachMoney fontSize='small' sx={{ color: "#d31d30" }} /><AttachMoney fontSize='small' sx={{ color: "#d31d30" }} /></div></MenuItem>
+                        </Select>
                     </FormControl>
                 </div>
-                <div style={{ margin: 5 }}>
+                <div
+                    style={{
+                        marginLeft: "20px"
+                    }}
+                >
                     <label>Cuisines you've picked</label><br />
                     {
                         location.state.Cuisines.map((cuisine) => {
@@ -319,7 +266,11 @@ const ResultScreen = () => {
                         })
                     }
                 </div>
-                <div>
+                <div
+                    style={{
+                        marginLeft: "20px"
+                    }}
+                >
                     <label>Radius you've picked</label><br />
                     <Chip
                         key={location.state.radius}
@@ -333,20 +284,28 @@ const ResultScreen = () => {
 
     return (
         <Box>
-            <ArrowBack
-                titleAccess='Back to Cuisines Selection Page'
-                sx={{
-                    fontSize: "40px",
-                    color: "#208cac",
-                    top: "7%",
-                    left: "2%",
+            <div
+                style={{
                     display: "flex",
-                    ":hover": {
-                        cursor: "pointer"
-                    }
+                    width: "6%"
                 }}
-                onClick={() => window.location.href = "/cuisineselection"}
-            />
+            >
+                <ArrowBack
+                    titleAccess='Back to Cuisines Selection Page'
+                    sx={{
+                        fontSize: "40px",
+                        color: "#208cac",
+                        top: "7%",
+                        left: "2%",
+                        display: "flex",
+                        ":hover": {
+                            cursor: "pointer"
+                        }
+                    }}
+                    onClick={() => window.location.href = "/cuisineselection"}
+                />
+                Back to Selection Page
+            </div>
             {
                 isLoading
                     ? <CircularProgress />
@@ -359,8 +318,8 @@ const ResultScreen = () => {
                                     direction="column"
                                     alignItems="center"
                                     justifyContent="center"
-                                    style={{ minHeight: '90vh' }}
                                 >
+                                    {filterRadioButtons()}
                                     <Alert severity="info" sx={{ fontSize: 18 }}>
                                         {typeOfRestaurantsFound}
                                     </Alert>
@@ -373,8 +332,6 @@ const ResultScreen = () => {
                                         <Button onClick={handleSuggestions} sx={{ background: "#208cac", fontSize: "17px" }} >Suggest us one!</Button>
                                     </div>
                                 </Grid>
-
-                                {filterRadioButtons()}
 
                             </Box>
 
@@ -394,7 +351,8 @@ const ResultScreen = () => {
                                         <Box sx={{
                                             position: 'relative',
                                             maxWidth: '40vw',
-                                            bgcolor: 'background.paper',
+                                                bgcolor: 'transparent',
+                                                borderRadius: "10px",
                                             border: '1px solid #000',
                                             boxShadow: 24,
                                             p: '1.5vw'
@@ -419,6 +377,7 @@ const ResultScreen = () => {
                                                                     height: "15vh",
                                                                     aspectRatio: "16/9",
                                                                     objectFit: "cover",
+                                                                    borderRadius: "10px"
                                                                 }}
                                                             />
                                                         </TableCell>
@@ -426,7 +385,7 @@ const ResultScreen = () => {
                                                             <Typography variant="h5" component="div">
                                                                 {randomRestaurant.name}
                                                             </Typography>
-                                                            <Rating disabled value={randomRestaurant.rating} precision={0.5} />
+                                                                <Rating readOnly value={randomRestaurant.rating} precision={0.5} />
                                                             <Typography variant="h5" color="text.secondary">
                                                                 {randomRestaurant.price}
                                                             </Typography>
@@ -443,12 +402,15 @@ const ResultScreen = () => {
                                                                     },
                                                                 }}
                                                             >
-                                                                Yelp Page
+                                                                    Go to Yelp Page!
                                                             </Button>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                        <TableRow>
+                                                            <TableCell colSpan={2}>
                                                                 <Typography variant="body2" color="text.secondary">
                                                                     How it was chosen: <br />
-                                                                    - First we filtered all the resutarants based on your cuisines. <br />
-                                                                    - Then we filtered all the restaurants which are closed at the moment. <br />
+                                                                    - First we filtered all the open restaurants based on your cuisines. <br />
                                                                     - Then we filter out the restaurants that are based on your rating and price preferences. <br />
                                                                     - Then we apply weighted randomize to be fair and randomly picked one of the restaurants that matched your preferences. <br />
                                                                 </Typography>
