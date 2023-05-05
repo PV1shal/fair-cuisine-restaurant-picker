@@ -175,9 +175,14 @@ const CuisineSection = () => {
                                         }}
                                     />
                                     <TextField
-                                        placeholder='Enter Search Radius (in Kilometers)'
+                                        placeholder='Enter Search Radius (max. 25 Kilometers)'
                                         value={radius}
-                                        onChange={(e) => setRadius(e.target.value)}
+                                        onChange={(e) => {
+                                            const inputValue = e.target.value;
+                                            if (inputValue === '' || (parseInt(inputValue, 10) <= 25)) {
+                                                setRadius(inputValue);
+                                            }
+                                        }}
                                         variant="outlined"
                                         sx={{
                                             border: '0px solid black',

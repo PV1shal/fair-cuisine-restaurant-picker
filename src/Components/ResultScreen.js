@@ -22,7 +22,7 @@ const ResultScreen = () => {
             "userPreferences": {
                 "location": location.state.location,
                 "categories": location.state.Cuisines,
-                "radius": parseInt(location.state.radius) * 1000
+                "radius": parseInt(location.state.radius) * 1000 || 10000
             }
         };
 
@@ -54,37 +54,6 @@ const ResultScreen = () => {
                 setLoading(false);
             });
     }, []);
-
-    // useEffect(() => {
-    //     setLoading(true);
-    //     const data = {
-    //         "userPreferences": {
-    //             "location": location.state.location,
-    //             "categories": location.state.Cuisines,
-    //             "radius": parseInt(location.state.radius) * 1000
-    //         }
-    //     };
-
-    //     YelpServices.getBusinesses(data)
-    //         .then((res) => {
-    //             const allRestaurants = res.data.yelpAPI;
-    //             console.log(allRestaurants);
-    //             setRestaurants(allRestaurants);
-    //             if (res.status === 200) {
-    //                 setTypeOfRestaurantsFound("We found some restaurants that had all the cuisines you selected!");
-    //             } else if (res.status === 201) {
-    //                 setTypeOfRestaurantsFound("We couldn't find any restaurants which had all the cuisines you selected, but we found some that had some of them.");
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             console.log(err);
-    //             setRestaurants([]);
-    //         })
-    //         .finally(() => {
-    //             setLoading(false);
-    //         });
-    // }, []);
-
 
     const getCategories = (data) => {
         return data.map((category) => {
@@ -241,7 +210,7 @@ const ResultScreen = () => {
         return (
             <div style={{
                 position: "absolute",
-                top: "10%",
+                top: "15vh",
                 right: "2%",
             }}>
                 <div>
