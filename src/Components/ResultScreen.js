@@ -1,5 +1,5 @@
 import { Button, CardContent, FormControl, FormLabel, Modal, Radio, RadioGroup } from '@mui/joy';
-import { CircularProgress, Typography, Box, Card, Grid, Table, TableRow, TableCell, Rating, Chip, FormControlLabel } from '@mui/material';
+import { Alert, BottomNavigation, CircularProgress, Typography, Box, Card, Grid, Table, TableRow, TableCell, Rating, Chip, FormControlLabel } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { AttachMoney, Close } from '@mui/icons-material';
 import { useLocation } from 'react-router-dom';
@@ -282,8 +282,27 @@ const ResultScreen = () => {
                         </RadioGroup>
                     </FormControl>
                 </div>
+                <div style={{ margin: 5 }}>
+                    <label>Cuisines you've picked</label><br />
+                    {
+                        location.state.Cuisines.map((cuisine) => {
+                            return (
+                                <Chip
+                                    key={cuisine}
+                                    label={cuisine}
+                                    style={{ margin: "0.5rem" }}
+                                />
+                            );
+                        })
+                    }
+                </div>
                 <div>
-                    <Button onClick={handleSuggestions}>Suggest us one!</Button>
+                    <label>Radius you've picked</label><br />
+                    <Chip
+                        key={location.state.radius}
+                        label={location.state.radius + " km"}
+                        style={{ margin: "0.5rem" }}
+                    />
                 </div>
             </div>
         );
@@ -305,14 +324,17 @@ const ResultScreen = () => {
                                     justifyContent="center"
                                     style={{ minHeight: '90vh' }}
                                 >
+                                    <Alert severity="info" sx={{ fontSize: 18 }}>
+                                        {typeOfRestaurantsFound}
+                                    </Alert>
                                     <Grid item xl={6}>
                                         <Box sx={{ borderRadius: 3 }}>
-                                            <Typography variant="body2" component="div">
-                                                {typeOfRestaurantsFound}
-                                            </Typography>
                                             {getValidRestaurants()}
                                         </Box>
                                     </Grid>
+                                    <div style={{ position: "fixed", bottom: 0, left: 0, width: "100%", height: "3%", paddingBottom: "14px", paddingTop: "10px", backgroundColor: "white", boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)" }}>
+                                        <Button onClick={handleSuggestions} sx={{ background: "#208cac", fontSize: "17px" }} >Suggest us one!</Button>
+                                    </div>
                                 </Grid>
 
                                 {filterRadioButtons()}
