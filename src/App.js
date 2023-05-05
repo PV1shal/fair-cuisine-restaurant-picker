@@ -38,7 +38,7 @@ function App() {
 
       <AppBar position="static">
         <Toolbar sx={{ display: 'flex', alignItems: 'center', background: "#d31d30" }}>
-          <Typography variant="h4" component="div">
+          <Typography variant="h4" component="div" onClick={() => { window.location.href = "/" }} sx={{ ":hover": { cursor: "pointer" } }}>
             Couple<b>Eats</b>
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
